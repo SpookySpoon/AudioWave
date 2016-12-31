@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>DragonSlider_OpaqueLong.png</file>
+    </qresource>
+</RCC>
