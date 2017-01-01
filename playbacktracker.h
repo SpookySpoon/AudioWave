@@ -14,6 +14,7 @@ public:
     PlaybackTracker(QObject* parent=nullptr);
 private:
     void play(const QString& file, int volume);
+    void playNextTrack();
     MaPlaya2* newPlayer=nullptr;
     Ui::MaPlaya2 *ui;
     QStringList pFiles;
@@ -22,6 +23,7 @@ private slots:
     void onPlayButton();
     void onPauseButton();
     void onAddFilesButton();
+    void onIndexesMoved(QModelIndexList);
     void onListViewDoubleClick(QModelIndex trackIndex);
 };
 

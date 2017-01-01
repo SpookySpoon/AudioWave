@@ -1,3 +1,4 @@
+#include <QTimer>
 #include <QPainter>
 #include <QEvent>
 #include <QDebug>
@@ -29,20 +30,18 @@ bool CustomSlider::eventFilter(QObject *, QEvent *event)
 
 void CustomSlider::mousePressEvent(QMouseEvent* event)
 {
-    shadowSlide=event->pos().x();
-//    proportion=event->pos().x()/(double)width();
-    repaint();
+    mouseBrowsing(event);
 }
 void CustomSlider::mouseMoveEvent(QMouseEvent *event)
 {
-    shadowSlide=event->pos().x();
-//    proportion=event->pos().x()/(double)width();
-    repaint();
+    mouseBrowsing(event);
 }
 void CustomSlider::mouseReleaseEvent(QMouseEvent* event)
 {
     shadowSlide=0;
     proportion=event->pos().x()/(double)width();
+    setValue(maximum*(double)proportion);
+    emit moved(value);
     repaint();
 }
 
@@ -75,4 +74,37 @@ void CustomSlider::paintEvent(QPaintEvent *event)
         opaShadowPainter.setBrush(brush);
         opaShadowPainter.drawRect(0,0,shadowSlide,height());
     }
+}
+void CustomSlider::incrementSlider()
+{
+    proportion+=incrementPortion;
+    repaint();
+}
+void CustomSlider::incrementValue()
+{
+    value++;
+}
+void CustomSlider::setMaximum(int max)
+{
+    setValue(0);
+    proportion=0.0;
+    incrementPortion=1/(double)max/5.0;
+    maximum=max;
+}
+void CustomSlider::setValue(int someValue)
+{
+    value=someValue;
+//    proportion=value/(double)maximum;
+    repaint();
+}
+int CustomSlider::getValue()
+{
+    return value;
+}
+void CustomSlider::mouseBrowsing(QMouseEvent* event)
+{
+    shadowSlide=std::min(std::max(event->pos().x(),0),width());
+    setValue(maximum*shadowSlide/(double)width());
+    repaint();
+    emit browsing(value);
 }

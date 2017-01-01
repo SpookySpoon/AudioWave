@@ -1,3 +1,5 @@
+#include <QDebug>
+#include "trackwrapper.h"
 #include "staticfunctions.h"
 
 StaticFunctions::StaticFunctions()
@@ -16,4 +18,11 @@ QString StaticFunctions::timeFormat(int seconds)
     {
         return QString("m:ss");
     }
+}
+
+void CALLBACK StaticFunctions::LoopSyncProc(HSYNC handle, DWORD channel, DWORD data, void *user)
+{
+    TrackWrapper* opaP=reinterpret_cast<TrackWrapper*>(user);
+    opaP->callTrackEnd();
+    BASS_ChannelPlay(channel,FALSE);
 }

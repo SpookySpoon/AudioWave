@@ -146,7 +146,7 @@
     </widget>
    </item>
    <item row="4" column="0" colspan="4">
-    <widget class="CustomSlider" name="vsualTimeline" native="true"/>
+    <widget class="CustomSlider" name="visualTimeline" native="true"/>
    </item>
   </layout>
  </widget>

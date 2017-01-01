@@ -18,7 +18,6 @@ PlaybackTracker::PlaybackTracker(QObject* parent)
     connect(ui->buttonAddFiles,SIGNAL(clicked()),this,SLOT(onAddFilesButton()));
     connect(ui->buttonPause,SIGNAL(clicked()),this,SLOT(onPauseButton()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
-
 }
 
 void PlaybackTracker::onAddFilesButton()
@@ -51,7 +50,6 @@ void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
         delete tracks.last();
         tracks.clear();
     }
-    qDebug()<<"PlaybackTracker::onListViewDoubleClick";
     QString fP=trackIndex.data().toString();
     tracks.append(new TrackWrapper(fP, ui, this));
 }
@@ -59,13 +57,28 @@ void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
 
 void PlaybackTracker::onPauseButton()
 {
-    for (auto i:pFiles)
-    {
-        qDebug()<<i;
-    }
+    qDebug()<<ui->listView->model()->index(2,0).data();
+//    for (auto i:pFiles)
+//    {
+//        qDebug()<<i;
+//    }
 }
 void PlaybackTracker::onPlayButton()
 {
+
+}
+
+void PlaybackTracker::playNextTrack()
+{
+//    ui->listView->i
+}
+
+void PlaybackTracker::onIndexesMoved(QModelIndexList list)
+{
+    for (auto i:list)
+    {
+        qDebug()<<i.data().toString();
+    }
 
 }
 

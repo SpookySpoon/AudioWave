@@ -18,18 +18,13 @@ SOURCES += main.cpp \
     customslider.cpp
 
 win32: LIBS += -L$$PWD/./ -lbass
-win32: LIBS += -L$$PWD/./ -lcomdlg32
-LIBS += -$$PWD/./-lcomdlg32
-#LIBS = -lcomdlg32
 LIBS += -L$$PWD/./-lbass
-#LIBS += comdlg32.lib
 
 INCLUDEPATH += $$PWD/.
 DEPENDPATH += $$PWD/.
 
 #win32:!win32-g++:
 PRE_TARGETDEPS += $$PWD/./bass.lib
-PRE_TARGETDEPS += $$PWD/./comdlg32.dll
 #else:win32-g++: PRE_TARGETDEPS += $$PWD/./libbass.a
 
 FORMS += \
