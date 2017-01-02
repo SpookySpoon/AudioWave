@@ -27,7 +27,10 @@ TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::MaPlaya2 *someUi, Q
 
 TrackWrapper::~TrackWrapper()
 {
-
+    progressTimerSeconds->stop();//NEW
+    progressTimerSlider->stop();//NEW
+    BASS_Stop();
+    BASS_Free();
 }
 
 void TrackWrapper::trackInit(const QString& file)
@@ -54,14 +57,12 @@ void TrackWrapper::play()
     startProgressTimerSeconds();
     startProgressTimerSlider();
     BASS_ChannelPlay(myStream,FALSE);
-    qDebug()<<"playing";
 }
 
 void TrackWrapper::pause()
 {
     if(BASS_ChannelIsActive(myStream)==BASS_ACTIVE_PLAYING)
     {
-        qDebug()<<"pausing";
         BASS_ChannelPause(myStream);
         remainintTimeSeconds=progressTimerSeconds->remainingTime();//NEW
         remainingTimeSlider=progressTimerSlider->remainingTime();//NEW
@@ -89,7 +90,6 @@ void TrackWrapper::jumpTo(int position)
 
 void TrackWrapper::callTrackEnd()
 {
-    qDebug()<<"yraaa!";
     emit trackEnded();
 }
 

@@ -11,23 +11,6 @@ CustomSlider::CustomSlider(QWidget* parent):
     this->installEventFilter(this);
 }
 
-bool CustomSlider::eventFilter(QObject *, QEvent *event)
-{
-
-    switch (event->type())
-    {
-//        case QEvent::MouseButtonPress:
-////            onPress(static_cast<QMouseEvent*>(event));
-//            return true;
-//        case QEvent::MouseMove:
-////            onPress(static_cast<QMouseEvent*>(event));
-//            return true;
-
-        default:
-            return false;
-    }
-}
-
 void CustomSlider::mousePressEvent(QMouseEvent* event)
 {
     mouseBrowsing(event);

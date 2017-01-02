@@ -15,7 +15,8 @@ SOURCES += main.cpp \
     playbacktracker.cpp \
     trackwrapper.cpp \
     staticfunctions.cpp \
-    customslider.cpp
+    customslider.cpp \
+    contextmenu.cpp
 
 win32: LIBS += -L$$PWD/./ -lbass
 LIBS += -L$$PWD/./-lbass
@@ -35,7 +36,8 @@ HEADERS += \
     playbacktracker.h \
     trackwrapper.h \
     staticfunctions.h \
-    customslider.h
+    customslider.h \
+    contextmenu.h
 
 RESOURCES += \
     timelinepixmap.qrc

@@ -3,6 +3,7 @@
 #include <QStringListModel>
 #include <QFileDialog>
 #include "trackwrapper.h"
+#include "contextmenu.h"
 #include "playbacktracker.h"
 #include "maplaya2.h"
 #include "ui_maplaya2.h"
@@ -15,38 +16,26 @@ PlaybackTracker::PlaybackTracker(QObject* parent)
     newPlayer=new MaPlaya2(ui);
     nModel= new QStandardItemModel(this);
     ui->listView->setModel(nModel);
+    ContextMenu* conMenu=new ContextMenu(ui,this);
+
     newPlayer->show();
-    connect(ui->buttonAddFiles,SIGNAL(clicked()),this,SLOT(onAddFilesButton()));
-    connect(ui->buttonPause,SIGNAL(clicked()),this,SLOT(onPauseButton()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
     connect(ui->listView->model(),SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
             this,SLOT(onPlaylistShuffle(QModelIndex,QModelIndex,QVector<int>)));
 }
 
-void PlaybackTracker::onAddFilesButton()
+PlaybackTracker::~PlaybackTracker()
 {
-    QFileDialog getFilesDialog;
-    getFilesDialog.setNameFilter(tr("*.CDA *.AAC *.AC3 *.APE*.DTS *.FLAC *.IT *.MIDI *.MO3"
-                   "*.MOD *.M4A *.M4B *.MP1 *.MP2 *.MP3 *.MPC*.MTM *.OFR *.OGG *.OPUS *.RMI"
-                   "*.S3M *.SPX*.TAK *.TTA *.UMX *.WAV *.WMA *.WV *.XM *.DSF *.DFF"));
-    getFilesDialog.setFileMode(QFileDialog::ExistingFiles);
-    if(getFilesDialog.exec())
-    {
-        pFiles=getFilesDialog.selectedFiles();
-        for (auto i:pFiles)
-        {
-            QStandardItem* opaItem=new QStandardItem(i);
-            opaItem->setFlags(Qt::ItemIsEnabled|Qt::ItemIsDragEnabled|Qt::ItemIsUserCheckable|Qt::ItemIsSelectable);
-            nModel->appendRow(opaItem);
-        }
-        trackPlayed=nModel->index(2,0);
-    }
-    else {
-        return;
-    }
+
 }
+
 void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
 {
+    //Отсеиваем правые кнопки мыши.
+    auto buttons = qApp->mouseButtons();
+    if(buttons==Qt::RightButton)
+    {return;}
+    //Если вызов производился левой кнопкой, то удаляем созданный канал и создаём новый.
     if(!tracks.isEmpty())
     {
         delete tracks.last();
@@ -58,26 +47,16 @@ void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
     connect(tracks.last(),SIGNAL(callNewTrack()),this,SLOT(playNext()));
 }
 
-
-void PlaybackTracker::onPauseButton()
-{
-//    qDebug()<<ui->listView->model()->index(2,0).data();
-    qDebug()<<trackPlayed.data().toString()<<"\n"<<trackPlayed.row();
-//    for (auto i:pFiles)
-//    {
-//        qDebug()<<i;
-//    }
-}
-
 void PlaybackTracker::playNext()
 {
     int currentRow = trackPlayed.row();
-    if(nModel->rowCount()>currentRow)
+    if(nModel->rowCount()-1>currentRow)
     {
         onListViewDoubleClick(nModel->index(currentRow+1,0));
     }
     else
     {
+
         onListViewDoubleClick(nModel->index(0,0));
     }
 }

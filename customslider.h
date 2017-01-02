@@ -1,5 +1,5 @@
-#ifndef CUSTOMSLIDER_H
-#define CUSTOMSLIDER_H
+#pragma once
+
 #include <QWidget>
 
 class CustomSlider: public QWidget
@@ -11,21 +11,20 @@ public:
     int getValue();
     void setValue(int);
 protected:
-    bool eventFilter(QObject *watched, QEvent *event);
     void paintEvent(QPaintEvent *event)Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event)Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent* event)Q_DECL_OVERRIDE;
     void mouseReleaseEvent(QMouseEvent *event)Q_DECL_OVERRIDE;
 private:
     void mouseBrowsing(QMouseEvent* event);
-    double incrementPortion=1.0;//NEW
+    double incrementPortion=1.0;
     double proportion=1.0;
     int shadowSlide=0;
     int value=0;
     int maximum=100;
 private slots:
-    void incrementSlider();//NEW
-    void incrementValue();//NEW
+    void incrementSlider();
+    void incrementValue();
 signals:
     void moved(int);
     void browsing(int);
@@ -33,4 +32,3 @@ signals:
 
 };
 
-#endif // CUSTOMSLIDER_H
