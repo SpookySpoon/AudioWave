@@ -1,5 +1,6 @@
 #include <QDebug>
 #include "trackwrapper.h"
+#include "playbacktracker.h"
 #include "staticfunctions.h"
 
 StaticFunctions::StaticFunctions()
@@ -24,5 +25,5 @@ void CALLBACK StaticFunctions::LoopSyncProc(HSYNC handle, DWORD channel, DWORD d
 {
     TrackWrapper* opaP=reinterpret_cast<TrackWrapper*>(user);
     opaP->callTrackEnd();
-    BASS_ChannelPlay(channel,FALSE);
+//    BASS_ChannelPlay(channel,FALSE);
 }

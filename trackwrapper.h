@@ -23,7 +23,8 @@ private:
     QTimer* progressTimerSlider=nullptr;//NEW
     QTimer* progressTimerSeconds=nullptr;//NEW
     int remainintTimeSeconds=1000, remainingTimeSlider=200;//NEW
-
+public slots:
+    void wrapThisUp();
 private slots:
     void trackInit(const QString& file);
     void jumpTo(int);
@@ -33,7 +34,7 @@ private slots:
     void startProgressTimerSlider();//NEW
     void startProgressTimerSeconds();//NEW
     void onElapsedSec();//NEW
-
 signals:
     void trackEnded();//NEW
+    void callNewTrack();
 };

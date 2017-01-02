@@ -3,6 +3,7 @@
 #include "trackwrapper.h"
 #include "ui_maplaya2.h"
 #include "bass.h"
+#include "playbacktracker.h"
 #include "staticfunctions.h"
 
 TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::MaPlaya2 *someUi, QObject* parent)
@@ -20,13 +21,13 @@ TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::MaPlaya2 *someUi, Q
     connect(progressTimerSeconds,SIGNAL(timeout()),this,SLOT(startProgressTimerSeconds()));//NEW
     connect(progressTimerSeconds,SIGNAL(timeout()),this,SLOT(onElapsedSec()));//NEW
     connect(progressTimerSeconds,SIGNAL(timeout()),ui->visualTimeline,SLOT(incrementValue()));//NEW
+    connect(this,SIGNAL(trackEnded()),this,SLOT(wrapThisUp()));
     BASS_ChannelSetSync(myStream,BASS_SYNC_END,0,StaticFunctions::LoopSyncProc,this);
 }
 
 TrackWrapper::~TrackWrapper()
 {
-    BASS_Stop();
-    BASS_Free();
+
 }
 
 void TrackWrapper::trackInit(const QString& file)
@@ -137,5 +138,14 @@ void TrackWrapper::onElapsedSec()//NEW
     ui->labelTimeElapsed->setText(QString("%1%2")
         .arg(QDateTime::fromTime_t(elapsedSeconds).toUTC().toString(StaticFunctions::timeFormat(elapsedSeconds)))
         .arg(browsingTime));
+}
+
+void TrackWrapper::wrapThisUp()
+{
+    progressTimerSeconds->stop();//NEW
+    progressTimerSlider->stop();//NEW
+    BASS_Stop();
+    BASS_Free();
+    emit callNewTrack();
 }
 

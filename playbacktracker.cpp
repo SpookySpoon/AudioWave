@@ -13,11 +13,14 @@ PlaybackTracker::PlaybackTracker(QObject* parent)
 {
     ui = new Ui::MaPlaya2;
     newPlayer=new MaPlaya2(ui);
+    nModel= new QStandardItemModel(this);
+    ui->listView->setModel(nModel);
     newPlayer->show();
-    connect(ui->buttonPlay,SIGNAL(clicked()),this,SLOT(onPlayButton()));
     connect(ui->buttonAddFiles,SIGNAL(clicked()),this,SLOT(onAddFilesButton()));
     connect(ui->buttonPause,SIGNAL(clicked()),this,SLOT(onPauseButton()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
+    connect(ui->listView->model(),SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+            this,SLOT(onPlaylistShuffle(QModelIndex,QModelIndex,QVector<int>)));
 }
 
 void PlaybackTracker::onAddFilesButton()
@@ -30,14 +33,13 @@ void PlaybackTracker::onAddFilesButton()
     if(getFilesDialog.exec())
     {
         pFiles=getFilesDialog.selectedFiles();
-        QStandardItemModel* nModel = new QStandardItemModel(this);
         for (auto i:pFiles)
         {
             QStandardItem* opaItem=new QStandardItem(i);
             opaItem->setFlags(Qt::ItemIsEnabled|Qt::ItemIsDragEnabled|Qt::ItemIsUserCheckable|Qt::ItemIsSelectable);
             nModel->appendRow(opaItem);
         }
-        ui->listView->setModel(nModel);
+        trackPlayed=nModel->index(2,0);
     }
     else {
         return;
@@ -52,34 +54,42 @@ void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
     }
     QString fP=trackIndex.data().toString();
     tracks.append(new TrackWrapper(fP, ui, this));
+    trackPlayed=trackIndex;
+    connect(tracks.last(),SIGNAL(callNewTrack()),this,SLOT(playNext()));
 }
 
 
 void PlaybackTracker::onPauseButton()
 {
-    qDebug()<<ui->listView->model()->index(2,0).data();
+//    qDebug()<<ui->listView->model()->index(2,0).data();
+    qDebug()<<trackPlayed.data().toString()<<"\n"<<trackPlayed.row();
 //    for (auto i:pFiles)
 //    {
 //        qDebug()<<i;
 //    }
 }
-void PlaybackTracker::onPlayButton()
-{
 
-}
-
-void PlaybackTracker::playNextTrack()
+void PlaybackTracker::playNext()
 {
-//    ui->listView->i
-}
-
-void PlaybackTracker::onIndexesMoved(QModelIndexList list)
-{
-    for (auto i:list)
+    int currentRow = trackPlayed.row();
+    if(nModel->rowCount()>currentRow)
     {
-        qDebug()<<i.data().toString();
+        onListViewDoubleClick(nModel->index(currentRow+1,0));
     }
-
+    else
+    {
+        onListViewDoubleClick(nModel->index(0,0));
+    }
 }
+
+void PlaybackTracker::onPlaylistShuffle
+(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
+{
+    if(trackPlayed.data()==topLeft.data())
+    {
+        trackPlayed=topLeft;
+    }
+}
+
 
 
