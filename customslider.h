@@ -9,6 +9,7 @@ public:
     CustomSlider(QWidget* parent=nullptr);
     void setMaximum(int max);
     int getValue();
+    int getMaximum();
     void setValue(int);
 protected:
     void paintEvent(QPaintEvent *event)Q_DECL_OVERRIDE;

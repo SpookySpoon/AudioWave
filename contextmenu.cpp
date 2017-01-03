@@ -1,10 +1,11 @@
 //#include "playbacktracker.h"
+#include <QDebug>
 #include <QFileDialog>
 #include <QStandardItem>
 #include "contextmenu.h"
-#include "ui_maplaya2.h"
+#include "ui_plauerui.h"
 
-ContextMenu::ContextMenu(Ui::MaPlaya2* somePlayerUI, QObject *parent)
+ContextMenu::ContextMenu(Ui::PlayerUI* somePlayerUI, QObject *parent)
     :QObject(parent), playerUI(somePlayerUI)
 {
     nModel= qobject_cast<QStandardItemModel*>(playerUI->listView->model());
@@ -15,6 +16,8 @@ ContextMenu::ContextMenu(Ui::MaPlaya2* somePlayerUI, QObject *parent)
     playerUI->listView->setContextMenuPolicy(Qt::ActionsContextMenu);
     connect(addFiles,SIGNAL(triggered()),this,SLOT(onAddFilesButton()));
     connect(removeFiles,SIGNAL(triggered()),this,SLOT(onRemoveFilesButton()));
+    connect(playerUI->listView->model(),SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
+            this,SLOT(onPlaylistShuffle(QModelIndex,QModelIndex,QVector<int>)));
 }
 
 void ContextMenu::onAddFilesButton()
@@ -42,8 +45,49 @@ void ContextMenu::onAddFilesButton()
 void ContextMenu::onRemoveFilesButton()
 {
     QModelIndexList opaList=playerUI->listView->selectionModel()->selectedIndexes();
-    do
+    std::sort(opaList.begin(),opaList.end(),qGreater<QModelIndex>());
+
+    for (auto i:opaList)
     {
-        nModel->removeRow(opaList.takeLast().row());
-    }while(!opaList.isEmpty());
+        if(i==trackToPlay)
+        {
+            getNextTrack();
+            ignoreNextTrack=true;
+        }
+        emit removing(i.data().toString());
+        nModel->removeRow(i.row());
+    }
+}
+
+void ContextMenu::setTrackToPlay(const QPersistentModelIndex& playedIndex)
+{
+    trackToPlay=playedIndex;
+    ignoreNextTrack=false;
+}
+
+QPersistentModelIndex ContextMenu::getTrackToPlay()
+{
+    return trackToPlay;
+}
+void ContextMenu::getNextTrack()
+{
+    if(ignoreNextTrack)
+    {return;}
+    if(nModel->rowCount()-1>trackToPlay.row())
+    {
+        setTrackToPlay(nModel->index(trackToPlay.row()+1,0));
+    }
+    else
+    {
+        setTrackToPlay(nModel->index(0,0));
+    }
+}
+
+void ContextMenu::onPlaylistShuffle
+(const QModelIndex &topLeft, const QModelIndex &, const QVector<int> &)
+{
+    if(trackToPlay.data()==topLeft.data())
+    {
+        trackToPlay=topLeft;
+    }
 }

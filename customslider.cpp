@@ -28,7 +28,7 @@ void CustomSlider::mouseReleaseEvent(QMouseEvent* event)
     repaint();
 }
 
-void CustomSlider::paintEvent(QPaintEvent *event)
+void CustomSlider::paintEvent(QPaintEvent *)
 {   
     QImage dragonSlider(":/DragonSlider_OpaqueLong.png");
     dragonSlider=dragonSlider.scaled(width(),height(),Qt::IgnoreAspectRatio);
@@ -77,12 +77,15 @@ void CustomSlider::setMaximum(int max)
 void CustomSlider::setValue(int someValue)
 {
     value=someValue;
-//    proportion=value/(double)maximum;
     repaint();
 }
 int CustomSlider::getValue()
 {
     return value;
+}
+int CustomSlider::getMaximum()
+{
+    return maximum;
 }
 void CustomSlider::mouseBrowsing(QMouseEvent* event)
 {

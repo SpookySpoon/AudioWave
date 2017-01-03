@@ -3,38 +3,36 @@
 #include <QTimer>
 #include "bass.h"
 namespace Ui {
-class MaPlaya2;
+class PlayerUI;
 }
 
 class TrackWrapper:public QObject
 {
     Q_OBJECT
 public:
-    TrackWrapper(const QString& trackPath, Ui::MaPlaya2 *ui, QObject* parent=nullptr);
+    TrackWrapper(const QString& trackPath, Ui::PlayerUI *ui, QObject* parent=nullptr);
     ~TrackWrapper();
-    void callTrackEnd();
 private:
-    QString trackPath;
+    void nullPosition();
+    void channelStop();
     QString browsingTime;
     uint myStream=0;
-    int trackTime=0;
-    int elapsedSeconds=0; //NEW
-    Ui::MaPlaya2 *ui;
-    QTimer* progressTimerSlider=nullptr;//NEW
-    QTimer* progressTimerSeconds=nullptr;//NEW
-    int remainintTimeSeconds=1000, remainingTimeSlider=200;//NEW
-public slots:
-    void wrapThisUp();
+    Ui::PlayerUI *ui=nullptr;
+    QTimer* progressTimerSlider=nullptr;
+    QTimer* progressTimerSeconds=nullptr;
+    int remainintTimeSeconds=1000, remainingTimeSlider=200, elapsedSeconds=0;
 private slots:
+    void wrapThisUp();
     void trackInit(const QString& file);
     void jumpTo(int);
     void play();
-    void pause();
+    void onButtonPlay();
+    void onButtonPause();
     void onBrowsing(int);
-    void startProgressTimerSlider();//NEW
-    void startProgressTimerSeconds();//NEW
-    void onElapsedSec();//NEW
+    void startProgressTimerSlider();
+    void startProgressTimerSeconds();
+    void onElapsedSec();
 signals:
-    void trackEnded();//NEW
+    void trackEnded();
     void callNewTrack();
 };

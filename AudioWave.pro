@@ -11,12 +11,13 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 SOURCES += main.cpp \
-    maplaya2.cpp \
     playbacktracker.cpp \
     trackwrapper.cpp \
     staticfunctions.cpp \
     customslider.cpp \
-    contextmenu.cpp
+    contextmenu.cpp \
+    playerui.cpp \
+    playlist.cpp
 
 win32: LIBS += -L$$PWD/./ -lbass
 LIBS += -L$$PWD/./-lbass
@@ -29,15 +30,16 @@ PRE_TARGETDEPS += $$PWD/./bass.lib
 #else:win32-g++: PRE_TARGETDEPS += $$PWD/./libbass.a
 
 FORMS += \
-    maplaya2.ui
+    plauerui.ui
 
 HEADERS += \
-    maplaya2.h \
     playbacktracker.h \
     trackwrapper.h \
     staticfunctions.h \
     customslider.h \
-    contextmenu.h
+    contextmenu.h \
+    playerui.h \
+    playlist.h
 
 RESOURCES += \
     timelinepixmap.qrc

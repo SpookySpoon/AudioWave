@@ -1,29 +1,34 @@
 #pragma once
 #include <QModelIndex>
 #include <QObject>
-class MaPlaya2;
+class PlayerUI;
 
 namespace Ui {
-class MaPlaya2;
+class PlayerUI;
 }
 class TrackWrapper;
 class QStandardItemModel;
+class ContextMenu;
 class PlaybackTracker:public QObject
 {
     Q_OBJECT
 public:
     PlaybackTracker(QObject* parent=nullptr);
     ~PlaybackTracker();
+    void switchIdleMode(bool idleMode);
 private:
+    bool idleMode=false;
+    void loadTrack(QModelIndex trackIndex);
     void play(const QString& file, int volume);
-    MaPlaya2* newPlayer=nullptr;
-    Ui::MaPlaya2 *ui=nullptr;
+    PlayerUI* newPlayer=nullptr;
+    Ui::PlayerUI *ui=nullptr;
     QList<TrackWrapper*> tracks;
     QPersistentModelIndex trackPlayed;
     QStandardItemModel* nModel=nullptr;
+    ContextMenu* listViewMenu;
 private slots:
     void playNext();
+    void onButtonStop();
     void onListViewDoubleClick(QModelIndex trackIndex);
-    void onPlaylistShuffle(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
 };
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MaPlaya2</class>
- <widget class="QWidget" name="MaPlaya2">
+ <class>PlayerUI</class>
+ <widget class="QWidget" name="PlayerUI">
   <property name="geometry">
    <rect>
     <x>0</x>

@@ -1,27 +1,24 @@
 #include <QStandardItem>
 #include <QDebug>
-#include <QStringListModel>
-#include <QFileDialog>
 #include "trackwrapper.h"
 #include "contextmenu.h"
 #include "playbacktracker.h"
-#include "maplaya2.h"
-#include "ui_maplaya2.h"
+#include "playerui.h"
+#include "ui_plauerui.h"
 #include "bass.h"
 
 PlaybackTracker::PlaybackTracker(QObject* parent)
     :QObject(parent)
 {
-    ui = new Ui::MaPlaya2;
-    newPlayer=new MaPlaya2(ui);
+    ui = new Ui::PlayerUI;
+    newPlayer=new PlayerUI(ui);
     nModel= new QStandardItemModel(this);
     ui->listView->setModel(nModel);
-    ContextMenu* conMenu=new ContextMenu(ui,this);
-
+    listViewMenu=new ContextMenu(ui,this);
     newPlayer->show();
+    connect(ui->buttonStop,SIGNAL(clicked()),this,SLOT(onButtonStop()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
-    connect(ui->listView->model(),SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)),
-            this,SLOT(onPlaylistShuffle(QModelIndex,QModelIndex,QVector<int>)));
+
 }
 
 PlaybackTracker::~PlaybackTracker()
@@ -30,6 +27,16 @@ PlaybackTracker::~PlaybackTracker()
 }
 
 void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
+{
+    loadTrack(trackIndex);
+    ui->buttonPlay->click();
+}
+void PlaybackTracker::onButtonStop()
+{
+    loadTrack(listViewMenu->getTrackToPlay());
+    ui->visualTimeline->repaint();
+}
+void PlaybackTracker::loadTrack(QModelIndex trackIndex)
 {
     //Отсеиваем правые кнопки мыши.
     auto buttons = qApp->mouseButtons();
@@ -44,31 +51,15 @@ void PlaybackTracker::onListViewDoubleClick(QModelIndex trackIndex)
     QString fP=trackIndex.data().toString();
     tracks.append(new TrackWrapper(fP, ui, this));
     trackPlayed=trackIndex;
+    listViewMenu->setTrackToPlay(trackIndex);
     connect(tracks.last(),SIGNAL(callNewTrack()),this,SLOT(playNext()));
 }
-
 void PlaybackTracker::playNext()
 {
-    int currentRow = trackPlayed.row();
-    if(nModel->rowCount()-1>currentRow)
-    {
-        onListViewDoubleClick(nModel->index(currentRow+1,0));
-    }
-    else
-    {
-
-        onListViewDoubleClick(nModel->index(0,0));
-    }
+    listViewMenu->getNextTrack();
+    onListViewDoubleClick(listViewMenu->getTrackToPlay());
 }
 
-void PlaybackTracker::onPlaylistShuffle
-(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles)
-{
-    if(trackPlayed.data()==topLeft.data())
-    {
-        trackPlayed=topLeft;
-    }
-}
 
 
 
