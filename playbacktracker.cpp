@@ -16,6 +16,7 @@ PlaybackTracker::PlaybackTracker(QObject* parent)
     ui->listView->setModel(nModel);
     listViewMenu=new ContextMenu(ui,this);
     newPlayer->show();
+    ejectTracks();
     connect(ui->buttonStop,SIGNAL(clicked()),this,SLOT(onButtonStop()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
 }
@@ -31,6 +32,7 @@ void PlaybackTracker::onButtonStop()
     if(tmpI.row()!=-1)
     {
         loadTrack(tmpI);
+        ui->visualTimeline->setEnabled(false);
         ui->visualTimeline->repaint();
     }
     else
@@ -74,6 +76,7 @@ void PlaybackTracker::ejectTracks()
     ui->labelTimeElapsed->setText("-:--");
     ui->labelTimeTotal->setText("-:--");
     ui->labelSongName->setText("");
+    ui->visualTimeline->setEnabled(false);
 }
 
 

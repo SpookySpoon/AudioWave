@@ -72,6 +72,7 @@ void TrackWrapper::nullPosition()
 
 void TrackWrapper::play()
 {
+    ui->visualTimeline->setEnabled(true);
     startProgressTimerSeconds();
     startProgressTimerSlider();
     BASS_ChannelPlay(myStream,FALSE);
