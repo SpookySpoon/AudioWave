@@ -14,10 +14,7 @@ class PlaybackTracker:public QObject
     Q_OBJECT
 public:
     PlaybackTracker(QObject* parent=nullptr);
-    ~PlaybackTracker();
-    void switchIdleMode(bool idleMode);
 private:
-    bool idleMode=false;
     void loadTrack(QModelIndex trackIndex);
     void play(const QString& file, int volume);
     PlayerUI* newPlayer=nullptr;

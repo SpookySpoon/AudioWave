@@ -16,13 +16,9 @@ PlaybackTracker::PlaybackTracker(QObject* parent)
     ui->listView->setModel(nModel);
     listViewMenu=new ContextMenu(ui,this);
     newPlayer->show();
+    BASS_SetVolume(ui->sliderVolume->value());
     connect(ui->buttonStop,SIGNAL(clicked()),this,SLOT(onButtonStop()));
     connect(ui->listView,SIGNAL(doubleClicked(QModelIndex)),this,SLOT(onListViewDoubleClick(QModelIndex)));
-
-}
-
-PlaybackTracker::~PlaybackTracker()
-{
 
 }
 

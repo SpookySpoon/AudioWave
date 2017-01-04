@@ -18,6 +18,7 @@ TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::PlayerUI *someUi, Q
 
     connect(ui->buttonPlay,SIGNAL(clicked()),this,SLOT(onButtonPlay()));
     connect(ui->buttonPause,SIGNAL(clicked()),this,SLOT(onButtonPause()));
+    connect(ui->sliderVolume,SIGNAL(sliderMoved(int)),this,SLOT(onVolumeChange(int)));
 
     connect(progressTimerSlider,SIGNAL(timeout()),ui->visualTimeline,SLOT(incrementSlider()));
     connect(progressTimerSlider,SIGNAL(timeout()),this,SLOT(startProgressTimerSlider()));
@@ -47,6 +48,7 @@ void TrackWrapper::trackInit(const QString& file)
     ui->visualTimeline->setMaximum(trackTime);
     ui->labelTimeTotal->setText(StaticFunctions::timeFormat(trackTime));
     ui->labelTimeElapsed->setText(QString("0:00"));
+    BASS_ChannelSlideAttribute(myStream, BASS_ATTRIB_VOL, ui->sliderVolume->value()/(float)100, 20);
 }
 
 void TrackWrapper::onButtonPlay()
@@ -148,6 +150,10 @@ void TrackWrapper::onElapsedSec()
     ui->labelTimeElapsed->setText(QString("%1%2")
         .arg(StaticFunctions::timeFormat(elapsedSeconds))
         .arg(browsingTime));
+}
+void TrackWrapper::onVolumeChange(int volume)
+{
+    BASS_ChannelSlideAttribute(myStream, BASS_ATTRIB_VOL, volume/(float)100, 20);
 }
 
 void TrackWrapper::wrapThisUp()

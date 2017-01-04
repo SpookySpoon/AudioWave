@@ -28,6 +28,7 @@ private slots:
     void play();
     void onButtonPlay();
     void onButtonPause();
+    void onVolumeChange(int volume);
     void onBrowsing(int);
     void startProgressTimerSlider();
     void startProgressTimerSeconds();
