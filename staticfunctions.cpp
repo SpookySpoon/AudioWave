@@ -5,10 +5,7 @@
 #include "staticfunctions.h"
 
 StaticFunctions::StaticFunctions()
-{
-
-}
-
+{}
 
 QString StaticFunctions::timeFormat(int seconds)
 {

@@ -6,9 +6,8 @@
 #include "customslider.h"
 
 CustomSlider::CustomSlider(QWidget* parent):
-    QWidget(parent)
+    QAbstractSlider(parent)
 {
-    this->installEventFilter(this);
 }
 
 void CustomSlider::mousePressEvent(QMouseEvent* event)
@@ -21,10 +20,9 @@ void CustomSlider::mouseMoveEvent(QMouseEvent *event)
 }
 void CustomSlider::mouseReleaseEvent(QMouseEvent* event)
 {
-    shadowSlide=0;
+    shadowSliderWidth=0;
     proportion=event->pos().x()/(double)width();
-    setValue(maximum*(double)proportion);
-    emit moved(value);
+    setValue(maximum()*(double)proportion);
     repaint();
 }
 
@@ -49,13 +47,13 @@ void CustomSlider::paintEvent(QPaintEvent *)
     backgroundPainter.setBrush(brush1);
     backgroundPainter.drawRect(proportion*width(),0,(1-proportion)*width(),height());
 
-    if(shadowSlide)
+    if(shadowSliderWidth)
     {
         QPainter opaShadowPainter(this);
         QBrush brush(QColor(0, 0, 0, 100));
         opaShadowPainter.setPen(Qt::NoPen);
         opaShadowPainter.setBrush(brush);
-        opaShadowPainter.drawRect(0,0,shadowSlide,height());
+        opaShadowPainter.drawRect(0,0,shadowSliderWidth,height());
     }
 }
 void CustomSlider::incrementSlider()
@@ -63,34 +61,18 @@ void CustomSlider::incrementSlider()
     proportion+=incrementPortion;
     repaint();
 }
-void CustomSlider::incrementValue()
-{
-    value++;
-}
-void CustomSlider::setMaximum(int max)
+void CustomSlider::resetSlider(int max)
 {
     setValue(0);
     proportion=0.0;
     incrementPortion=1/(double)max/5.0;
-    maximum=max;
-}
-void CustomSlider::setValue(int someValue)
-{
-    value=someValue;
+    setMaximum(max);
     repaint();
 }
-int CustomSlider::getValue()
-{
-    return value;
-}
-int CustomSlider::getMaximum()
-{
-    return maximum;
-}
+
 void CustomSlider::mouseBrowsing(QMouseEvent* event)
 {
-    shadowSlide=std::min(std::max(event->pos().x(),0),width());
-    setValue(maximum*shadowSlide/(double)width());
+    shadowSliderWidth=std::min(std::max(event->pos().x(),0),width());
     repaint();
-    emit browsing(value);
+    emit sliderMoved(maximum()*shadowSliderWidth/(double)width());
 }

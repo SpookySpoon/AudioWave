@@ -12,9 +12,8 @@ TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::PlayerUI *someUi, Q
     progressTimerSlider = new QTimer(this);
     progressTimerSeconds = new QTimer(this);
     trackInit(someTrackPath);
-
-    connect(ui->visualTimeline,SIGNAL(moved(int)),this,SLOT(jumpTo(int)));
-    connect(ui->visualTimeline,SIGNAL(browsing(int)),this,SLOT(onBrowsing(int)));
+    connect(ui->visualTimeline,SIGNAL(valueChanged(int)),this,SLOT(jumpTo(int)));
+    connect(ui->visualTimeline,SIGNAL(sliderMoved(int)),this,SLOT(onBrowsing(int)));
 
     connect(ui->buttonPlay,SIGNAL(clicked()),this,SLOT(onButtonPlay()));
     connect(ui->buttonPause,SIGNAL(clicked()),this,SLOT(onButtonPause()));
@@ -25,7 +24,6 @@ TrackWrapper::TrackWrapper(const QString& someTrackPath, Ui::PlayerUI *someUi, Q
 
     connect(progressTimerSeconds,SIGNAL(timeout()),this,SLOT(startProgressTimerSeconds()));
     connect(progressTimerSeconds,SIGNAL(timeout()),this,SLOT(onElapsedSec()));
-    connect(progressTimerSeconds,SIGNAL(timeout()),ui->visualTimeline,SLOT(incrementValue()));
 
     connect(this,SIGNAL(trackEnded()),this,SLOT(wrapThisUp()));
 
@@ -45,9 +43,10 @@ void TrackWrapper::trackInit(const QString& file)
     myStream=BASS_StreamCreateFile(FALSE,file.toLatin1().data(),0,0,0);
     long chLength = BASS_ChannelGetLength(myStream,0);
     int trackTime=BASS_ChannelBytes2Seconds(myStream,chLength);
-    ui->visualTimeline->setMaximum(trackTime);
+    ui->visualTimeline->resetSlider(trackTime);
     ui->labelTimeTotal->setText(StaticFunctions::timeFormat(trackTime));
     ui->labelTimeElapsed->setText(QString("0:00"));
+    ui->labelSongName->setText(file);
     BASS_ChannelSlideAttribute(myStream, BASS_ATTRIB_VOL, ui->sliderVolume->value()/(float)100, 20);
 }
 
@@ -68,13 +67,11 @@ void TrackWrapper::nullPosition()
     BASS_ChannelSetPosition(myStream,0,0);
     elapsedSeconds=0;
     ui->labelTimeElapsed->setText(QString("0:00"));
-    ui->visualTimeline->setMaximum(ui->visualTimeline->getMaximum());
+    ui->visualTimeline->resetSlider(ui->visualTimeline->maximum());
 }
+
 void TrackWrapper::play()
 {
-    long posBytes=BASS_ChannelGetPosition(myStream,0);
-    int posSecs=BASS_ChannelBytes2Seconds(myStream,posBytes);
-    ui->visualTimeline->setValue(posSecs);
     startProgressTimerSeconds();
     startProgressTimerSlider();
     BASS_ChannelPlay(myStream,FALSE);
@@ -151,6 +148,7 @@ void TrackWrapper::onElapsedSec()
         .arg(StaticFunctions::timeFormat(elapsedSeconds))
         .arg(browsingTime));
 }
+
 void TrackWrapper::onVolumeChange(int volume)
 {
     BASS_ChannelSlideAttribute(myStream, BASS_ATTRIB_VOL, volume/(float)100, 20);

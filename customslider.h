@@ -1,16 +1,13 @@
 #pragma once
 
-#include <QWidget>
+#include <QAbstractSlider>
 
-class CustomSlider: public QWidget
+class CustomSlider: public QAbstractSlider
 {
     Q_OBJECT
 public:
     CustomSlider(QWidget* parent=nullptr);
-    void setMaximum(int max);
-    int getValue();
-    int getMaximum();
-    void setValue(int);
+    void resetSlider(int max);
 protected:
     void paintEvent(QPaintEvent *event)Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *event)Q_DECL_OVERRIDE;
@@ -20,16 +17,8 @@ private:
     void mouseBrowsing(QMouseEvent* event);
     double incrementPortion=1.0;
     double proportion=1.0;
-    int shadowSlide=0;
-    int value=0;
-    int maximum=100;
+    int shadowSliderWidth=0;
 private slots:
     void incrementSlider();
-    void incrementValue();
-signals:
-    void moved(int);
-    void browsing(int);
-
-
 };
 

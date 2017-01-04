@@ -77,9 +77,13 @@ void ContextMenu::getNextTrack()
     {
         setTrackToPlay(nModel->index(trackToPlay.row()+1,0));
     }
-    else
+    else if(nModel->rowCount()>0)
     {
         setTrackToPlay(nModel->index(0,0));
+    }
+    else
+    {
+        setTrackToPlay(nModel->index(-1,-1));
     }
 }
 

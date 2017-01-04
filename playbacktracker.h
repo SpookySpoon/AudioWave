@@ -15,6 +15,7 @@ class PlaybackTracker:public QObject
 public:
     PlaybackTracker(QObject* parent=nullptr);
 private:
+    void ejectTracks();
     void loadTrack(QModelIndex trackIndex);
     void play(const QString& file, int volume);
     PlayerUI* newPlayer=nullptr;
